@@ -81,7 +81,7 @@ private:
       const TSharedRef<SVerticalBox>& pVertical,
       TokenSource& tokenSource,
       TokenSource thisValue,
-      const FString& label,
+      const FText& label,
       bool requiresIonConnection,
       const TSharedRef<SWidget>& pWidget);
   FReply UseOrCreate(std::shared_ptr<CesiumIonSession> pSession);

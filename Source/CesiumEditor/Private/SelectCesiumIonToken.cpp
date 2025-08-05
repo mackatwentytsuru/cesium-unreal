@@ -1,5 +1,7 @@
 // Copyright 2020-2024 CesiumGS, Inc. and Contributors
 
+#define LOCTEXT_NAMESPACE "SelectCesiumIonToken"
+
 #include "SelectCesiumIonToken.h"
 #include "Cesium3DTileset.h"
 #include "CesiumEditor.h"
@@ -218,14 +220,12 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
   pSingleUserText->AddSlot().AutoHeight()
       [SNew(STextBlock)
            .AutoWrapText(true)
-           .Text(FText::FromString(TEXT(
-               "Cesium for Unreal is currently connected to a Cesium ion server running in single-user authentication mode. Tokens are not used in this mode.")))];
+           .Text(LOCTEXT("SingleUserModeText", "Cesium for Unreal is currently connected to a Cesium ion server running in single-user authentication mode. Tokens are not used in this mode."))];
 
   pLoaderOrContent->AddSlot().AutoHeight()
       [SNew(STextBlock)
            .AutoWrapText(true)
-           .Text(FText::FromString(TEXT(
-               "Cesium for Unreal embeds a Cesium ion token in your project in order to allow it to access the assets you add to your levels. Select the Cesium ion token to use.")))];
+           .Text(LOCTEXT("TokenSelectionDescription", "Cesium for Unreal embeds a Cesium ion token in your project in order to allow it to access the assets you add to your levels. Select the Cesium ion token to use."))];
 
   pLoaderOrContent->AddSlot().AutoHeight().Padding(
       5.0f)[SNew(CesiumIonServerDisplay).Server(pServer)];
@@ -239,8 +239,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
                                                 : EVisibility::Visible;
                })
                .AutoWrapText(true)
-               .Text(FText::FromString(TEXT(
-                   "Please connect to Cesium ion to select a token from your account or to create a new token.")))];
+               .Text(LOCTEXT("PleaseConnectText", "Please connect to Cesium ion to select a token from your account or to create a new token."))];
 
   pLoaderOrContent->AddSlot()
       .AutoHeight()[SNew(SThrobber).Visibility_Lambda([pSession]() {
@@ -272,14 +271,14 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
       pMainVerticalBox,
       this->_tokenSource,
       TokenSource::Create,
-      TEXT("Create a new token"),
+      LOCTEXT("CreateNewTokenLabel", "Create a new token"),
       true,
       SNew(SHorizontalBox) +
           SHorizontalBox::Slot()
               .VAlign(EVerticalAlignment::VAlign_Center)
               .AutoWidth()
               .Padding(5.0f)[SNew(STextBlock)
-                                 .Text(FText::FromString(TEXT("Name:")))] +
+                                 .Text(LOCTEXT("NameLabel", "Name:"))] +
           SHorizontalBox::Slot()
               .VAlign(EVerticalAlignment::VAlign_Center)
               .AutoWidth()
@@ -303,7 +302,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
                        this->_pTokensCombo->GetSelectedItem().IsValid()
                    ? FText::FromString(UTF8_TO_TCHAR(
                          this->_pTokensCombo->GetSelectedItem()->name.c_str()))
-                   : FText::FromString(TEXT(""));
+                   : FText::GetEmpty();
       })];
 
   this->createRadioButton(
@@ -311,7 +310,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
       pMainVerticalBox,
       this->_tokenSource,
       TokenSource::UseExisting,
-      TEXT("Use an existing token"),
+      LOCTEXT("UseExistingTokenLabel", "Use an existing token"),
       true,
       SNew(SHorizontalBox) +
           SHorizontalBox::Slot()
@@ -319,7 +318,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
               .AutoWidth()
               .MaxWidth(500.0f)
               .Padding(5.0f)[SNew(STextBlock)
-                                 .Text(FText::FromString(TEXT("Token:")))] +
+                                 .Text(LOCTEXT("TokenLabel", "Token:"))] +
           SHorizontalBox::Slot()
               .VAlign(EVerticalAlignment::VAlign_Center)
               .Padding(5.0f)
@@ -330,14 +329,14 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
       pMainVerticalBox,
       this->_tokenSource,
       TokenSource::Specify,
-      TEXT("Specify a token"),
+      LOCTEXT("SpecifyTokenLabel", "Specify a token"),
       false,
       SNew(SHorizontalBox) +
           SHorizontalBox::Slot()
               .VAlign(EVerticalAlignment::VAlign_Center)
               .AutoWidth()
               .Padding(5.0f)[SNew(STextBlock)
-                                 .Text(FText::FromString(TEXT("Token:")))] +
+                                 .Text(LOCTEXT("TokenLabel", "Token:"))] +
           SHorizontalBox::Slot()
               .VAlign(EVerticalAlignment::VAlign_Center)
               .Padding(5.0f)
@@ -363,7 +362,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
                              : EVisibility::Visible;
                 })
                 .OnClicked(this, &SelectCesiumIonToken::UseOrCreate, pSession)
-                .Text(FText::FromString(TEXT("Use as Project Default Token")))];
+                .Text(LOCTEXT("UseAsProjectDefaultTokenButton", "Use as Project Default Token"))];
 
   pMainVerticalBox->AddSlot().AutoHeight().Padding(
       5.0f,
@@ -378,8 +377,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
                              : EVisibility::Collapsed;
                 })
                 .OnClicked(this, &SelectCesiumIonToken::UseOrCreate, pSession)
-                .Text(FText::FromString(
-                    TEXT("Create New Project Default Token")))];
+                .Text(LOCTEXT("CreateNewProjectDefaultTokenButton", "Create New Project Default Token"))];
 
   TSharedRef<SVerticalBox> totalBox = SNew(SVerticalBox);
 
@@ -388,7 +386,7 @@ void SelectCesiumIonToken::Construct(const FArguments& InArgs) {
 
   SWindow::Construct(
       SWindow::FArguments()
-          .Title(FText::FromString(TEXT("Select a Cesium ion Token")))
+          .Title(LOCTEXT("WindowTitle", "Select a Cesium ion Token"))
           .AutoCenter(EAutoCenter::PreferredWorkArea)
           .SizingRule(ESizingRule::UserSized)
           .ClientSize(FVector2D(
@@ -406,7 +404,7 @@ void SelectCesiumIonToken::createRadioButton(
     const TSharedRef<SVerticalBox>& pVertical,
     TokenSource& tokenSource,
     TokenSource thisValue,
-    const FString& label,
+    const FText& label,
     bool requiresIonConnection,
     const TSharedRef<SWidget>& pWidget) {
   auto visibility = [pSession, requiresIonConnection]() {
@@ -440,7 +438,7 @@ void SelectCesiumIonToken::createRadioButton(
                             .TextStyle(
                                 FCesiumEditorModule::GetStyle(),
                                 "BodyBold")
-                            .Text(FText::FromString(label))] +
+                            .Text(label)] +
                    SVerticalBox::Slot().Padding(5.0f).AutoHeight()[pWidget]]]];
 }
 
@@ -500,7 +498,7 @@ SelectCesiumIonToken::UseOrCreate(std::shared_ptr<CesiumIonSession> pSession) {
       UCesiumIonServer* pServer = pPanel->_pServer.Get();
 
       FScopedTransaction transaction(
-          FText::FromString("Set Project Default Token"));
+          LOCTEXT("SetProjectDefaultTokenTransaction", "Set Project Default Token"));
       pServer->DefaultIonAccessTokenId =
           UTF8_TO_TCHAR(response.value->id.c_str());
       pServer->DefaultIonAccessToken =
@@ -619,3 +617,5 @@ FText SelectCesiumIonToken::GetSpecifiedToken() const {
 void SelectCesiumIonToken::SetSpecifiedToken(const FText& text) {
   this->_specifyToken.token = text.ToString();
 }
+
+#undef LOCTEXT_NAMESPACE

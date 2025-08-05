@@ -24,6 +24,8 @@ THIRD_PARTY_INCLUDES_END
 
 using namespace CesiumIonClient;
 
+#define LOCTEXT_NAMESPACE "CesiumIonTokenTroubleshooting"
+
 /*static*/ std::vector<CesiumIonTokenTroubleshooting::ExistingPanel>
     CesiumIonTokenTroubleshooting::_existingPanels{};
 
@@ -342,9 +344,9 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
   if (!isUsingCesiumIon(pIonObject)) {
     SWindow::Construct(
         SWindow::FArguments()
-            .Title(FText::FromString(FString::Format(
-                TEXT("{0}: Cesium ion Token Troubleshooting"),
-                {*getLabel(pIonObject)})))
+            .Title(FText::Format(
+                LOCTEXT("WindowTitle", "{0}: Cesium ion Token Troubleshooting"),
+                FText::FromString(*getLabel(pIonObject))))
             .AutoCenter(EAutoCenter::PreferredWorkArea)
             .SizingRule(ESizingRule::UserSized)
             .ClientSize(FVector2D(800, 600))
@@ -354,8 +356,7 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
                      .Padding(FMargin(10.0f, 20.0f, 10.0f, 20.0f))
                          [SNew(STextBlock)
                               .AutoWrapText(true)
-                              .Text(FText::FromString(TEXT(
-                                  "This object is not configured to connect to Cesium ion.")))]]);
+                              .Text(LOCTEXT("NotConfiguredForIon", "This object is not configured to connect to Cesium ion."))]]);
     return;
   }
 
@@ -384,9 +385,9 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
   TSharedRef<SHorizontalBox> pDiagnosticColumns = SNew(SHorizontalBox);
 
   if (!getIonAccessToken(pIonObject).IsEmpty()) {
-    this->_assetTokenState.name = FString::Format(
-        TEXT("This {0}'s Access Token"),
-        {getObjectType(pIonObject)});
+    this->_assetTokenState.name = FText::Format(
+        LOCTEXT("AssetTokenName", "This {0}'s Access Token"),
+        FText::FromString(getObjectType(pIonObject))).ToString();
     this->_assetTokenState.token = getIonAccessToken(pIonObject);
     pDiagnosticColumns->AddSlot()
         .Padding(5.0f, 20.0f, 5.0f, 5.0f)
@@ -396,7 +397,7 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
             0.5f)[this->createTokenPanel(pIonObject, this->_assetTokenState)];
   }
 
-  this->_projectDefaultTokenState.name = TEXT("Project Default Access Token");
+  this->_projectDefaultTokenState.name = LOCTEXT("ProjectDefaultTokenName", "Project Default Access Token").ToString();
   this->_projectDefaultTokenState.token =
       getCesiumIonServer(pIonObject)->DefaultIonAccessToken;
 
@@ -431,9 +432,9 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
         .VAlign(EVerticalAlignment::VAlign_Top)
         .AutoWidth()
         .FillWidth(0.5f)[this->createDiagnosticPanel(
-            TEXT("Asset"),
+            LOCTEXT("Asset", "Asset").ToString(),
             {addTokenCheck(
-                TEXT("Asset ID exists in your user account"),
+                LOCTEXT("AssetExistsCheck", "Asset ID exists in your user account").ToString(),
                 this->_assetExistsInUserAccount)})];
   }
 
@@ -441,14 +442,14 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
 
   this->addRemedyButton(
       pMainVerticalBox,
-      TEXT("Connect to Cesium ion"),
+      LOCTEXT("ConnectToCesiumIon", "Connect to Cesium ion").ToString(),
       &CesiumIonTokenTroubleshooting::canConnectToCesiumIon,
       &CesiumIonTokenTroubleshooting::connectToCesiumIon);
 
   this->addRemedyButton(
       pMainVerticalBox,
       FString::Format(
-          TEXT("Use the project default token for this {0}"),
+          LOCTEXT("UseProjectDefaultToken", "Use the project default token for this {0}").ToString(),
           {getObjectType(pIonObject)}),
       &CesiumIonTokenTroubleshooting::canUseProjectDefaultToken,
       &CesiumIonTokenTroubleshooting::useProjectDefaultToken);
@@ -456,20 +457,20 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
   this->addRemedyButton(
       pMainVerticalBox,
       FString::Format(
-          TEXT("Authorize the {0}'s token to access this asset"),
+          LOCTEXT("AuthorizeAssetToken", "Authorize the {0}'s token to access this asset").ToString(),
           {getObjectType(pIonObject)}),
       &CesiumIonTokenTroubleshooting::canAuthorizeAssetToken,
       &CesiumIonTokenTroubleshooting::authorizeAssetToken);
 
   this->addRemedyButton(
       pMainVerticalBox,
-      TEXT("Authorize the project default token to access this asset"),
+      LOCTEXT("AuthorizeProjectDefaultToken", "Authorize the project default token to access this asset").ToString(),
       &CesiumIonTokenTroubleshooting::canAuthorizeProjectDefaultToken,
       &CesiumIonTokenTroubleshooting::authorizeProjectDefaultToken);
 
   this->addRemedyButton(
       pMainVerticalBox,
-      TEXT("Select or create a new project default token"),
+      LOCTEXT("SelectNewProjectDefaultToken", "Select or create a new project default token").ToString(),
       &CesiumIonTokenTroubleshooting::canSelectNewProjectDefaultToken,
       &CesiumIonTokenTroubleshooting::selectNewProjectDefaultToken);
 
@@ -486,8 +487,8 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
                         : EVisibility::Collapsed;
            })
            .AutoWrapText(true)
-           .Text(FText::FromString(FString::Format(
-               TEXT(
+           .Text(FText::Format(
+               LOCTEXT("NoAutomaticRemediesMessage", 
                    "No automatic remedies are possible for Asset ID {0}, because:\n"
                    " - The current token does not authorize access to the specified asset ID, and\n"
                    " - The asset ID does not exist in your Cesium ion account.\n"
@@ -495,19 +496,19 @@ void CesiumIonTokenTroubleshooting::Construct(const FArguments& InArgs) {
                    "Please click the button below to open Cesium ion and check:\n"
                    " - The {1}'s \"Ion Asset ID\" property is correct.\n"
                    " - If the asset is from the \"Asset Depot\", verify that it has been added to \"My Assets\"."),
-               {getIonAssetID(pIonObject), getObjectType(pIonObject)})))];
+               getIonAssetID(pIonObject), FText::FromString(getObjectType(pIonObject))))];
 
   this->addRemedyButton(
       pMainVerticalBox,
-      TEXT("Open Cesium ion on the Web"),
+      LOCTEXT("OpenCesiumIon", "Open Cesium ion on the Web").ToString(),
       &CesiumIonTokenTroubleshooting::canOpenCesiumIon,
       &CesiumIonTokenTroubleshooting::openCesiumIon);
 
   SWindow::Construct(
       SWindow::FArguments()
-          .Title(FText::FromString(FString::Format(
-              TEXT("{0}: Cesium ion Token Troubleshooting"),
-              {*getLabel(pIonObject)})))
+          .Title(FText::Format(
+              LOCTEXT("WindowTitle", "{0}: Cesium ion Token Troubleshooting"),
+              FText::FromString(*getLabel(pIonObject))))
           .AutoCenter(EAutoCenter::PreferredWorkArea)
           .SizingRule(ESizingRule::UserSized)
           .ClientSize(FVector2D(800, 600))
@@ -607,12 +608,12 @@ TSharedRef<SWidget> CesiumIonTokenTroubleshooting::createTokenPanel(
 
   return this->createDiagnosticPanel(
       state.name,
-      {addTokenCheck(TEXT("Is a valid Cesium ion token"), state.isValid),
+      {addTokenCheck(LOCTEXT("IsValidTokenCheck", "Is a valid Cesium ion token").ToString(), state.isValid),
        addTokenCheck(
-           TEXT("Allows access to this asset"),
+           LOCTEXT("AllowsAccessCheck", "Allows access to this asset").ToString(),
            state.allowsAccessToAsset),
        addTokenCheck(
-           TEXT("Is associated with your user account"),
+           LOCTEXT("AssociatedWithAccountCheck", "Is associated with your user account").ToString(),
            state.associatedWithUserAccount)});
 }
 
@@ -672,7 +673,7 @@ void CesiumIonTokenTroubleshooting::useProjectDefaultToken() {
   }
 
   FScopedTransaction transaction(
-      FText::FromString("Use Project Default Token"));
+      LOCTEXT("UseProjectDefaultTokenTransaction", "Use Project Default Token"));
   setIonAccessToken(this->_pIonObject, FString());
 }
 
@@ -853,3 +854,5 @@ void CesiumIonTokenTroubleshooting::authorizeToken(
         });
   });
 }
+
+#undef LOCTEXT_NAMESPACE

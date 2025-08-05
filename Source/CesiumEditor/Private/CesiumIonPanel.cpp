@@ -26,6 +26,8 @@
 
 using namespace CesiumIonClient;
 
+#define LOCTEXT_NAMESPACE "CesiumIonPanel"
+
 // Identifiers for the columns of the asset table view
 static FName ColumnName_Name = "Name";
 static FName ColumnName_Type = "Type";
@@ -77,19 +79,19 @@ void CesiumIonPanel::Construct(const FArguments& InArgs) {
           .HeaderRow(
               SNew(SHeaderRow) +
               SHeaderRow::Column(ColumnName_Name)
-                  .DefaultLabel(FText::FromString(TEXT("Name")))
+                  .DefaultLabel(LOCTEXT("AssetTableHeader_Name", "Name"))
                   .SortMode_Lambda(sortModeLambda(ColumnName_Name))
                   .OnSort(FOnSortModeChanged::CreateSP(
                       this,
                       &CesiumIonPanel::OnSortChange)) +
               SHeaderRow::Column(ColumnName_Type)
-                  .DefaultLabel(FText::FromString(TEXT("Type")))
+                  .DefaultLabel(LOCTEXT("AssetTableHeader_Type", "Type"))
                   .SortMode_Lambda(sortModeLambda(ColumnName_Type))
                   .OnSort(FOnSortModeChanged::CreateSP(
                       this,
                       &CesiumIonPanel::OnSortChange)) +
               SHeaderRow::Column(ColumnName_DateAdded)
-                  .DefaultLabel(FText::FromString(TEXT("Date added")))
+                  .DefaultLabel(LOCTEXT("AssetTableHeader_DateAdded", "Date added"))
                   .SortMode_Lambda(sortModeLambda(ColumnName_DateAdded))
                   .OnSort(FOnSortModeChanged::CreateSP(
                       this,
@@ -120,8 +122,8 @@ void CesiumIonPanel::Construct(const FArguments& InArgs) {
                       FCesiumEditorModule::GetStyle(), "CesiumButtonText")
                     .ContentPadding(FMargin(1.0, 1.0))
                     .HAlign(EHorizontalAlignment::HAlign_Center)
-                    .Text(FText::FromString(TEXT("Refresh")))
-                    .ToolTipText(FText::FromString(TEXT("Refresh the asset list")))
+                    .Text(LOCTEXT("RefreshButton", "Refresh"))
+                    .ToolTipText(LOCTEXT("RefreshButton_Tooltip", "Refresh the asset list"))
                     .OnClicked_Lambda([this]() {
                       FCesiumEditorModule::serverManager().GetCurrentSession()->refreshAssets();
                       Refresh();
@@ -228,7 +230,7 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                                : EVisibility::Collapsed;
                   })
                   .HAlign(EHorizontalAlignment::HAlign_Center)
-                  .Text(FText::FromString(TEXT("Add to Level")))
+                  .Text(LOCTEXT("AddToLevelButton", "Add to Level"))
                   .OnClicked_Lambda([this]() {
                     this->AddAssetToLevel(this->_pSelection);
                     return FReply::Handled();
@@ -246,10 +248,8 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                                : EVisibility::Collapsed;
                   })
                   .HAlign(EHorizontalAlignment::HAlign_Center)
-                  .Text(FText::FromString(
-                      TEXT("Use as Terrain Tileset Base Layer")))
-                  .ToolTipText(FText::FromString(TEXT(
-                      "Makes this asset the base overlay on the terrain tileset, underlying all others, by setting its MaterialLayerKey to 'Overlay0'. If the terrain tileset already has an 'Overlay0' it is removed. If no terrain tileset exists in the level, Cesium World Terrain is added.")))
+                  .Text(LOCTEXT("UseAsTerrainBaseLayerButton", "Use as Terrain Tileset Base Layer"))
+                  .ToolTipText(LOCTEXT("UseAsTerrainBaseLayerButton_Tooltip", "Makes this asset the base overlay on the terrain tileset, underlying all others, by setting its MaterialLayerKey to 'Overlay0'. If the terrain tileset already has an 'Overlay0' it is removed. If no terrain tileset exists in the level, Cesium World Terrain is added."))
                   .OnClicked_Lambda([this]() {
                     this->AddOverlayToTerrain(this->_pSelection, true);
                     return FReply::Handled();
@@ -267,9 +267,8 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                                : EVisibility::Collapsed;
                   })
                   .HAlign(EHorizontalAlignment::HAlign_Center)
-                  .Text(FText::FromString(TEXT("Drape Over Terrain Tileset")))
-                  .ToolTipText(FText::FromString(TEXT(
-                      "Adds this asset to any existing overlays on the terrain tileset by assigning it the first unused 'OverlayN` MaterialLayerKey. If no terrain tileset exists in the level, Cesium World Terrain is added.")))
+                  .Text(LOCTEXT("DrapeOverTerrainButton", "Drape Over Terrain Tileset"))
+                  .ToolTipText(LOCTEXT("DrapeOverTerrainButton_Tooltip", "Adds this asset to any existing overlays on the terrain tileset by assigning it the first unused 'OverlayN` MaterialLayerKey. If no terrain tileset exists in the level, Cesium World Terrain is added."))
                   .OnClicked_Lambda([this]() {
                     this->AddOverlayToTerrain(this->_pSelection, false);
                     return FReply::Handled();
@@ -288,8 +287,7 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                                : EVisibility::Collapsed;
                   })
                   .HAlign(EHorizontalAlignment::HAlign_Center)
-                  .Text(FText::FromString(
-                      TEXT("This type of asset is not currently supported")))
+                  .Text(LOCTEXT("AssetNotSupported", "This type of asset is not currently supported"))
                   .IsEnabled(false)] +
          SScrollBox::Slot().Padding(10).HAlign(
              EHorizontalAlignment::HAlign_Fill)
@@ -297,7 +295,7 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                   .TextStyle(
                       FCesiumEditorModule::GetStyle(),
                       "AssetDetailsFieldHeader")
-                  .Text(FText::FromString(TEXT("Description")))] +
+                  .Text(LOCTEXT("AssetDetails_Description", "Description"))] +
          SScrollBox::Slot().Padding(
              10,
              0)[SNew(STextBlock)
@@ -315,7 +313,7 @@ TSharedRef<SWidget> CesiumIonPanel::AssetDetails() {
                   .TextStyle(
                       FCesiumEditorModule::GetStyle(),
                       "AssetDetailsFieldHeader")
-                  .Text(FText::FromString(TEXT("Attribution")))] +
+                  .Text(LOCTEXT("AssetDetails_Attribution", "Attribution"))] +
          SScrollBox::Slot().Padding(
              10,
              0)[SNew(STextBlock)
@@ -623,3 +621,5 @@ TSharedRef<ITableRow> CesiumIonPanel::CreateAssetRow(
     const TSharedRef<STableViewBase>& list) {
   return SNew(AssetsTableRow, list, item);
 }
+
+#undef LOCTEXT_NAMESPACE

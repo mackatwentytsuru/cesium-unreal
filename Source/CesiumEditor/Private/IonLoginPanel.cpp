@@ -1,5 +1,7 @@
 // Copyright 2020-2024 CesiumGS, Inc. and Contributors
 
+#define LOCTEXT_NAMESPACE "IonLoginPanel"
+
 #include "IonLoginPanel.h"
 #include "CesiumEditor.h"
 #include "CesiumIonClient/Connection.h"
@@ -63,8 +65,7 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
           .Padding(5, 15, 5, 5)
           .AutoHeight()
               [SNew(STextBlock)
-                   .Text(FText::FromString(TEXT(
-                       "Waiting for you to sign into Cesium ion with your web browser...")))
+                   .Text(LOCTEXT("WaitingForSignIn", "Waiting for you to sign into Cesium ion with your web browser..."))
                    .AutoWrapText(true)] +
       SVerticalBox::Slot()
           .HAlign(HAlign_Center)
@@ -75,13 +76,12 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
           .AutoHeight()
               [SNew(SHyperlink)
                    .OnNavigate(this, &IonLoginPanel::LaunchBrowserAgain)
-                   .Text(FText::FromString(TEXT("Open web browser again")))] +
+                   .Text(LOCTEXT("OpenBrowserAgain", "Open web browser again"))] +
       SVerticalBox::Slot()
           .VAlign(VAlign_Top)
           .Padding(5)
           .AutoHeight()[SNew(STextBlock)
-                            .Text(FText::FromString(TEXT(
-                                "Or copy the URL below into your web browser")))
+                            .Text(LOCTEXT("CopyUrlInstruction", "Or copy the URL below into your web browser"))
                             .AutoWrapText(true)] +
       SVerticalBox::Slot()
           .HAlign(HAlign_Center)
@@ -105,8 +105,7 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
                             .OnClicked(
                                 this,
                                 &IonLoginPanel::CopyAuthorizeUrlToClipboard)
-                            .Text(
-                                FText::FromString(TEXT("Copy to clipboard")))]];
+                            .Text(LOCTEXT("CopyToClipboard", "Copy to clipboard"))]];
 
   TSharedPtr<SVerticalBox> connectionWidget =
       SNew(SVerticalBox) +
@@ -122,7 +121,7 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
                        FCesiumEditorModule::GetStyle(),
                        "CesiumButtonText")
                    .OnClicked(this, &IonLoginPanel::SignIn)
-                   .Text(FText::FromString(TEXT("Connect to Cesium ion")))] +
+                   .Text(LOCTEXT("ConnectToCesiumIon", "Connect to Cesium ion"))] +
       SVerticalBox::Slot()
           .VAlign(VAlign_Top)
           .HAlign(HAlign_Center)
@@ -135,7 +134,7 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
                        FCesiumEditorModule::GetStyle(),
                        "CesiumButtonText")
                    .OnClicked(this, &IonLoginPanel::CancelSignIn)
-                   .Text(FText::FromString(TEXT("Cancel Connecting")))] +
+                   .Text(LOCTEXT("CancelConnecting", "Cancel Connecting"))] +
       SVerticalBox::Slot()
           .VAlign(VAlign_Top)
           .Padding(10, 0, 10, 5)
@@ -153,14 +152,12 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
                    })
                    .AutoWrapText(true)
                    .TextStyle(FCesiumEditorModule::GetStyle(), "BodyBold")
-                   .Text(FText::FromString(TEXT(
-                       "You can now sign in with your Epic Games account!")))] +
+                   .Text(LOCTEXT("EpicGamesSignIn", "You can now sign in with your Epic Games account!"))] +
       SVerticalBox::Slot()
           .VAlign(VAlign_Top)
           .Padding(5, 15, 5, 5)
           .AutoHeight()[SNew(STextBlock)
-                            .Text(FText::FromString(
-                                TEXT("Resuming the previous connection...")))
+                            .Text(LOCTEXT("ResumingConnection", "Resuming the previous connection..."))
                             .Visibility_Lambda(visibleWhenResuming)
                             .AutoWrapText(true)] +
       SVerticalBox::Slot()
@@ -184,8 +181,7 @@ void IonLoginPanel::Construct(const FArguments& InArgs) {
            .Padding(30, 10, 30, 10)
                [SNew(STextBlock)
                     .AutoWrapText(true)
-                    .Text(FText::FromString(TEXT(
-                        "Access global high-resolution 3D content, including photogrammetry, terrain, imagery, and buildings. Bring your own data for tiling, hosting, and streaming to Unreal Engine.")))] +
+                    .Text(LOCTEXT("CesiumDescription", "Access global high-resolution 3D content, including photogrammetry, terrain, imagery, and buildings. Bring your own data for tiling, hosting, and streaming to Unreal Engine."))] +
        SScrollBox::Slot()
            .VAlign(VAlign_Top)
            .HAlign(HAlign_Center)
@@ -227,3 +223,5 @@ FReply IonLoginPanel::CancelSignIn() {
   pRequest->ProcessRequest();
   return FReply::Handled();
 }
+
+#undef LOCTEXT_NAMESPACE
